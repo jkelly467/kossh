@@ -6,21 +6,19 @@
  * user guide available at https://docs.gradle.org/4.6/userguide/java_library_plugin.html
  */
 buildscript {
-  ext.kotlin_version = '1.2.40'
 
   repositories {
     jcenter()
   }
   
   dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0"
   }
 }
 
-apply plugin: 'kotlin'
-apply plugin: 'java-library'
-apply plugin: 'org.junit.platform.gradle.plugin'
+plugins {
+  id "org.jetbrains.kotlin.jvm" version "1.2.51"
+  id "java-library"
+}
 
 dependencies {
   implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
@@ -38,4 +36,30 @@ repositories {
   // Use jcenter for resolving your dependencies.
   // You can declare any Maven/Ivy/file repository here.
   jcenter()
+}
+
+def getReleaseTag() {
+  def gitTagStdOut = new ByteArrayOutputStream()
+  try{
+    exec {
+      commandLine "git", "describe", "--abbrev=0", "--tags"
+      standardOutput = gitTagStdOut
+    }
+    return gitTagStdOut.toString().trim()
+  } catch(all){
+    return '0.0.0'
+  }
+}
+
+version = getReleaseTag()
+
+//gradle clean fatJar
+task fatJar(type: Jar) {
+  baseName = rootProject.name
+  from {
+    configurations.compile.collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
+  with jar
 }
