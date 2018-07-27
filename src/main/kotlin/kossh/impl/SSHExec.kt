@@ -113,7 +113,7 @@ private class InputStreamThread(val channel: ChannelExec, val input: InputStream
                     buffer.compact()
                     appender.append(cbOut.toString())
                     var s = 0
-                    var e = 0
+                    var e: Int
                     do {
                         e = appender.indexOf("\n", s)
                         if (e >= 0) {

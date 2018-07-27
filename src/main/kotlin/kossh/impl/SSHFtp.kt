@@ -22,28 +22,26 @@ class SSHFtp(val ssh: SSH) : TransferOperations, Closeable {
      * Returns possible content from a remote file called [remoteFilename] as a string
      */
     override fun get(remoteFilename: String): String? {
-        try {
-            return channel.get(remoteFilename).bufferedReader().readText()
+        return try {
+            channel.get(remoteFilename).bufferedReader().readText()
         } catch (se: SftpException) {
-            return null
+            null
         } catch (ioe: IOException) {
-            return null
+            null
         }
-        return null
     }
 
     /**
      * Returns possible content from a remote file called [remoteFilename] as an array of bytes
      */
     override fun getBytes(remoteFilename: String): ByteArray? {
-        try {
-            return SSHTools.inputStreamToByteArray(channel.get(remoteFilename))
+        return try {
+            SSHTools.inputStreamToByteArray(channel.get(remoteFilename))
         } catch (se: SftpException) {
-            return null
+            null
         } catch (ioe: IOException) {
-            return null
+            null
         }
-        return null
     }
 
     /**
@@ -107,14 +105,13 @@ class SSHFtp(val ssh: SSH) : TransferOperations, Closeable {
      * Gets a remote file called [filename] as a stream
      */
     fun getStream(filename: String): InputStream? {
-        try {
-            return channel.get(filename)
+        return try {
+            channel.get(filename)
         } catch (se: SftpException) {
-            return null
+            null
         } catch (ioe: IOException) {
-            return null
+            null
         }
-        return null
     }
 
     /**

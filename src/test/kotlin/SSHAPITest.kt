@@ -86,7 +86,7 @@ class SSHAPITest: StringSpec({
             executor.waitForEnd()
 
             x.forEachIndexed { index, s ->
-                log.info("$index : %s")
+                log.info("$index : $s")
             }
             x.size shouldBe 5
         }

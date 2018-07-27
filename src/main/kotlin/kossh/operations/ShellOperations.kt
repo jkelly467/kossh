@@ -1,8 +1,6 @@
 package kossh.operations
 
 import kossh.util.*
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -471,7 +469,7 @@ interface ShellOperations: CommonOperations {
     /**
      * Gets location of [command] on the remote system, based on the current PATH
      */
-    fun which(command: String): String? = execute("""which $command""")?.trim().let {
+    fun which(command: String): String? = execute("""which $command""").trim().let {
         if (it.isEmpty()) null else it
     }
 
