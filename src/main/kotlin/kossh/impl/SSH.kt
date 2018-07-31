@@ -222,12 +222,10 @@ open class SSH(val options: SSHOptions) : AllOperations, Closeable {
      */
     fun <T> scp(proc: SSHScp.() -> T): T = SSHScp(this).use { it.proc() }
 
-    fun noerr(data: ExecResult) {}
-
     /**
      * Runs [cmd] on the remote servers, sending stdout to [out] and stderr to [err]
      */
-    fun run(cmd:String, out: (ExecResult)->Any, err:(ExecResult)->Any = noerr) = SSHExec(cmd, out, err, this)
+    fun run(cmd:String, out: ExecResult.()->Unit, err: ExecResult.()->Unit = {}) = SSHExec(cmd, out, err, this)
 
     /**
      * Opens an exec channel solely to execute the [scmd], returning the trimmed stdout.
@@ -250,13 +248,13 @@ open class SSH(val options: SSHOptions) : AllOperations, Closeable {
         val stderr = StringBuilder()
         var exitCode = -1
 
-        val outputReceiver = fun(buffer: StringBuilder): (ExecResult) -> Any {
-            return fun(content: ExecResult): Any = when (content) {
+        val outputReceiver = fun(buffer: StringBuilder): ExecResult.()->Unit = {
+            when (this) {
                 is ExecPart -> {
                     if (buffer.length > 0) buffer.append("\n")
-                    buffer.append(content.content)
+                    buffer.append(content)
                 }
-                is ExecEnd -> exitCode = content.rc
+                is ExecEnd -> exitCode = rc
                 else -> Unit
             }
         }

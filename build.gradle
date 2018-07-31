@@ -18,6 +18,18 @@ buildscript {
 plugins {
   id "org.jetbrains.kotlin.jvm" version "1.2.51"
   id "java-library"
+  id "maven-publish"
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      groupId = "extra-utils"
+      version = "0.0.3"
+
+      from components.java
+    }
+  }
 }
 
 dependencies {

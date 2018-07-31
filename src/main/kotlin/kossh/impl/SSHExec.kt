@@ -7,8 +7,9 @@ import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import kossh.util.*
+import java.io.Closeable
 
-class SSHExec(val cmd: String, val out: (ExecResult)->Any, val err:(ExecResult)->Any, val ssh: SSH) {
+class SSHExec(cmd: String, out: ExecResult.()->Unit, err: ExecResult.()->Unit, val ssh: SSH): Closeable {
     private val channel: ChannelExec = ssh.jschsession().openChannel("exec") as ChannelExec
     private val stdout: InputStream
     private val stderr: InputStream
@@ -24,7 +25,7 @@ class SSHExec(val cmd: String, val out: (ExecResult)->Any, val err:(ExecResult)-
     }
 
     private val stdoutThread = InputStreamThread.Instance(channel, stdout, out, ssh.options.charset.toCharset())
-    private val stderrThread = InputStreamThread.Instance(channel, stdout, err, ssh.options.charset.toCharset())
+    private val stderrThread = InputStreamThread.Instance(channel, stderr, err, ssh.options.charset.toCharset())
     private val timeoutThread = TimeoutManagerThread.Instance(ssh.options.timeout) {
         stdoutThread.interrupt()
         stderrThread.interrupt()
@@ -52,7 +53,7 @@ class SSHExec(val cmd: String, val out: (ExecResult)->Any, val err:(ExecResult)-
     /**
      * Closes the exec channel and all open streams.
      */
-    fun close() {
+    override fun close() {
         stdin.close()
         stdoutThread.interrupt()
         stderrThread.interrupt()
@@ -84,10 +85,10 @@ private class TimeoutManagerThread(val timeout:Long, val todo: ()->Any): Thread(
 }
 
 private class InputStreamThread(val channel: ChannelExec, val input: InputStream,
-                                val output: (ExecResult)->Any, val charset:Charset): Thread() {
+                                val output: ExecResult.()->Unit, val charset:Charset): Thread() {
     companion object {
         fun Instance(channel: ChannelExec, input: InputStream,
-                     output: (ExecResult)->Any, charset:Charset): InputStreamThread {
+                     output: ExecResult.()->Unit, charset:Charset): InputStreamThread {
             val newthread = InputStreamThread(channel, input, output, charset)
             newthread.start()
             return newthread
@@ -117,7 +118,7 @@ private class InputStreamThread(val channel: ChannelExec, val input: InputStream
                     do {
                         e = appender.indexOf("\n", s)
                         if (e >= 0) {
-                            output(ExecPart(appender.substring(s, e)))
+                            ExecPart(appender.substring(s, e)).output()
                             s = e + 1
                         }
                     } while (e != -1)
@@ -126,13 +127,13 @@ private class InputStreamThread(val channel: ChannelExec, val input: InputStream
             } while (!eofreached)
 
             if (appender.length > 0) {
-                output(ExecPart(appender.toString()))
+                ExecPart(appender.toString()).output()
             }
-            output(ExecEnd(channel.exitStatus))
+            ExecEnd(channel.exitStatus).output()
         } catch (e: InterruptedIOException) {
-            output(ExecTimeout())
+            ExecTimeout().output()
         } catch (e: InterruptedException) {
-            output(ExecTimeout())
+            ExecTimeout().output()
         }
     }
 
