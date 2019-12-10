@@ -228,6 +228,11 @@ open class SSH(val options: SSHOptions) : AllOperations, Closeable {
     fun run(cmd:String, out: ExecResult.()->Unit, err: ExecResult.()->Unit = {}) = SSHExec(cmd, out, err, this)
 
     /**
+     * Runs [cmd] on the remote servers using coroutines, sending stdout to [out] and stderr to [err]
+     */
+    fun runAsync(cmd:String, out: suspend ExecResult.()->Unit, err: suspend ExecResult.()->Unit = {}) = SSHCoExec(cmd, out, err, this)
+
+    /**
      * Opens an exec channel solely to execute the [scmd], returning the trimmed stdout.
      */
     fun execOnceAndTrim(scmd: String): String = execOnce(scmd).trim()

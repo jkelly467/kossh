@@ -16,24 +16,50 @@ buildscript {
 }
 
 plugins {
-  id "org.jetbrains.kotlin.jvm" version "1.3.30"
+  id "org.jetbrains.kotlin.jvm" version "1.3.50"
   id "java-library"
   id "maven-publish"
+}
+
+/* PUBLISHING */
+group = 'ee.lib.kotlin'
+version = "0.1.1"
+
+task sourcesJar(type: Jar) {
+  from sourceSets.main.allJava
+  classifier = 'sources'
 }
 
 publishing {
   publications {
     mavenJava(MavenPublication) {
-      groupId = "extra-utils"
-      version = "0.0.4"
-
+      artifactId = 'kossh'
       from components.java
+      artifact sourcesJar
+      pom {
+        name = "KoSSH"
+        description = "An SSH library for Kotlin"
+        scm {
+          url = "https://bitbucket.org/applieddataconsultants/kossh"
+        }
+      }
+    }
+
+  }
+  repositories {
+    maven {
+      url = 'http://archiva.adc.int/repository/internal/'
+      credentials {
+        username = 'gradle'
+        password = 'gradle1'
+      }
     }
   }
 }
 
 dependencies {
-  implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2'
   implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.16.1'
 
   api 'com.jcraft:jsch:0.1.54'
@@ -50,21 +76,6 @@ repositories {
   // You can declare any Maven/Ivy/file repository here.
   jcenter()
 }
-
-def getReleaseTag() {
-  def gitTagStdOut = new ByteArrayOutputStream()
-  try{
-    exec {
-      commandLine "git", "describe", "--abbrev=0", "--tags"
-      standardOutput = gitTagStdOut
-    }
-    return gitTagStdOut.toString().trim()
-  } catch(all){
-    return '0.0.0'
-  }
-}
-
-version = getReleaseTag()
 
 //gradle clean fatJar
 task fatJar(type: Jar) {
