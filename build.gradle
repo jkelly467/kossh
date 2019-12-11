@@ -23,7 +23,10 @@ plugins {
 
 /* PUBLISHING */
 group = 'ee.lib.kotlin'
-version = "0.1.1"
+version = "0.1.2"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 task sourcesJar(type: Jar) {
   from sourceSets.main.allJava
