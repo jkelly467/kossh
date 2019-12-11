@@ -9,6 +9,7 @@ import java.nio.charset.Charset
 import kossh.util.*
 import kotlinx.coroutines.*
 import java.io.Closeable
+import java.nio.Buffer
 
 class SSHCoExec(cmd: String,
                 out: suspend ExecResult.()->Unit,
@@ -81,7 +82,7 @@ class SSHCoExec(cmd: String,
                 if (howmany == -1) eofreached = true
                 if (howmany > 0) {
                     buffer.put(bytes, 0, howmany)
-                    buffer.flip()
+                    (buffer as Buffer).flip()
                     val cbOut = charset.decode(buffer)
                     buffer.compact()
                     appender.append(cbOut.toString())

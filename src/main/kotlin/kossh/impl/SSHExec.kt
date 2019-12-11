@@ -8,6 +8,7 @@ import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import kossh.util.*
 import java.io.Closeable
+import java.nio.Buffer
 
 class SSHExec(cmd: String, out: ExecResult.()->Unit, err: ExecResult.()->Unit, val ssh: SSH): Closeable {
     private val channel: ChannelExec = ssh.jschsession().openChannel("exec") as ChannelExec
@@ -109,7 +110,7 @@ private class InputStreamThread(val channel: ChannelExec, val input: InputStream
                 if (howmany == -1) eofreached = true
                 if (howmany > 0) {
                     buffer.put(bytes, 0, howmany)
-                    buffer.flip()
+                    (buffer as Buffer).flip()
                     val cbOut = charset.decode(buffer)
                     buffer.compact()
                     appender.append(cbOut.toString())
