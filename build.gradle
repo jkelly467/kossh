@@ -8,7 +8,7 @@
 buildscript {
 
   repositories {
-    jcenter()
+    mavenCentral()
   }
   
   dependencies {
@@ -16,14 +16,14 @@ buildscript {
 }
 
 plugins {
-  id "org.jetbrains.kotlin.jvm" version "1.3.50"
+  id "org.jetbrains.kotlin.jvm" version "1.7.0"
   id "java-library"
   id "maven-publish"
 }
 
 /* PUBLISHING */
 group = 'ee.lib.kotlin'
-version = "0.1.3"
+version = "0.1.4"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -50,6 +50,7 @@ publishing {
 
   }
   repositories {
+    mavenCentral()
     maven {
       url = 'http://archiva.adc.int/repository/internal/'
       credentials {
@@ -61,11 +62,11 @@ publishing {
 }
 
 dependencies {
-  implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2'
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3'
   implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.16.1'
 
-  api 'com.jcraft:jsch:0.1.54'
+  api 'com.github.mwiede:jsch:0.2.1'
 
   implementation 'org.slf4j:slf4j-api:1.7.25'
 
