@@ -23,7 +23,7 @@ plugins {
 
 /* PUBLISHING */
 group = 'ee.lib.kotlin'
-version = "0.1.4"
+version = "0.1.5"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -50,13 +50,13 @@ publishing {
 
   }
   repositories {
-    mavenCentral()
     maven {
       url = 'http://archiva.adc.int/repository/internal/'
       credentials {
         username = 'gradle'
         password = 'gradle1'
       }
+      allowInsecureProtocol = true
     }
   }
 }
@@ -66,7 +66,8 @@ dependencies {
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3'
   implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.16.1'
 
-  api 'com.github.mwiede:jsch:0.2.1'
+   api 'com.github.mwiede:jsch:0.2.1'
+  api 'org.bouncycastle:bcprov-jdk18on:1.71'
 
   implementation 'org.slf4j:slf4j-api:1.7.25'
 
@@ -78,7 +79,7 @@ dependencies {
 repositories {
   // Use jcenter for resolving your dependencies.
   // You can declare any Maven/Ivy/file repository here.
-  jcenter()
+  mavenCentral()
 }
 
 //gradle clean fatJar
