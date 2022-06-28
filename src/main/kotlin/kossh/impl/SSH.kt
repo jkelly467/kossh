@@ -4,6 +4,7 @@ import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.OpenSSHConfig
 import com.jcraft.jsch.Session
+import com.jcraft.jsch.Slf4jLogger
 import kossh.operations.AllOperations
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -337,6 +338,7 @@ open class SSH(val options: SSHOptions) : AllOperations, Closeable {
     fun newSftp(): SSHFtp = SSHFtp(this)
 
     private fun buildSession(): Session {
+        JSch.setLogger(Slf4jLogger())
         options.identities.forEach { ident ->
             val fident = File(ident.privkey)
             if (fident.isFile) {

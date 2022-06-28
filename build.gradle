@@ -23,13 +23,13 @@ plugins {
 
 /* PUBLISHING */
 group = 'ee.lib.kotlin'
-version = "0.1.5"
+version = "0.1.6"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 task sourcesJar(type: Jar) {
-  from sourceSets.main.allJava
+  from sourceSets.main.kotlin
   classifier = 'sources'
 }
 
